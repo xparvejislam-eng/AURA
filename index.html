@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>AURA TOPUP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --primary-dark: #5B21B6;
+            --secondary: #06B6D4;
+            --accent: #F59E0B;
+            --background: #F5F3FF;
+            --surface: #FFFFFF;
+            --surface-alt: #EDE9FE;
+            --text: #1E1B4B;
+            --text-muted: #6B7280;
+            --border: #E5E0F5;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gradient-primary: linear-gradient(135deg, #6C3CE1 0%, #8B5CF6 100%);
+            --shadow-card: 0 8px 32px rgba(108, 60, 225, 0.12);
+            --shadow-hover: 0 12px 48px rgba(108, 60, 225, 0.20);
+            --radius-card: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            background-image: radial-gradient(circle at 10% 20%, rgba(108, 60, 225, 0.04) 0%, transparent 60%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 60%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface-alt);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(30, 27, 75, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary) !important;
+            border: none !important;
+            box-shadow: 0 4px 16px rgba(108, 60, 225, 0.35);
+            transition: var(--transition);
+            border-radius: 12px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(108, 60, 225, 0.45);
+        }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: var(--transition);
+            border-radius: 50px;
+            padding: 6px 4px;
+            flex: 1;
+            min-width: 0;
+            position: relative;
+        }
+        .nav-item .nav-icon-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 12px;
+            border-radius: 50px;
+            transition: var(--transition);
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        .nav-item .nav-icon-wrap i {
+            font-size: 20px;
+            transition: var(--transition);
+        }
+        .nav-item.active-tab .nav-icon-wrap {
+            background: var(--gradient-primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(108, 60, 225, 0.35);
+        }
+        .nav-item:active .nav-icon-wrap {
+            transform: scale(0.92);
+        }
+
+        .section-title-center {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .section-title-center .title-line {
+            flex: 1;
+            max-width: 60px;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        .section-title-center h3 {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        .section-title-center .title-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .leaderboard-card {
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: default !important;
+            pointer-events: none !important;
+        }
+        .leaderboard-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .leaderboard-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .leaderboard-card:hover::after {
+            opacity: 1;
+        }
+
+        .leaderboard-card .rank-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700, #F59E0B);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+        }
+        .rank-2 {
+            background: linear-gradient(135deg, #C0C0C0, #9CA3AF);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(156, 163, 175, 0.4);
+        }
+        .rank-3 {
+            background: linear-gradient(135deg, #CD7F32, #B45309);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(180, 83, 9, 0.4);
+        }
+        .rank-other {
+            background: var(--surface-alt);
+            color: var(--text-muted);
+        }
+
+        .leaderboard-card .user-detail {
+            flex: 1;
+            min-width: 0;
+        }
+        .leaderboard-card .user-detail .name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .leaderboard-card .spend-box .amount {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
+        }
+        .leaderboard-card .spend-box .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .profile-stat-item {
+            background: #FFFFFF !important;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 3px solid var(--border);
+            transition: var(--transition);
+            cursor: default !important;
+            pointer-events: none !important;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .profile-stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-border-1 {
+            border-color: #F59E0B;
+        }
+        .stat-border-2 {
+            border-color: #3B82F6;
+        }
+        .stat-border-3 {
+            border-color: #10B981;
+        }
+        .stat-border-4 {
+            border-color: #EC407A;
+        }
+
+        .profile-stat-item .stat-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .profile-stat-item .stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
+        .profile-stat-item .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .latest-order-card {
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            cursor: default !important;
+            pointer-events: none !important;
+        }
+        .latest-order-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            border-radius: 0 4px 4px 0;
+        }
+        .latest-order-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+        .latest-order-card:hover::before {
+            opacity: 1;
+        }
+
+        .latest-order-card .order-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .latest-order-card .order-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .latest-order-card .order-info .name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .latest-order-card .order-info .detail {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .latest-order-card .order-status {
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .profile-header-card {
+            background: linear-gradient(135deg, #6C3CE1 0%, #4F46E5 50%, #7C3AED 100%);
+            border-radius: 24px;
+            padding: 28px 20px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(108, 60, 225, 0.3);
+        }
+        .profile-header-card::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .profile-email {
+            font-size: 13px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+        .profile-balance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 6px 18px;
+            border-radius: 50px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-card {
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .profile-card-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .profile-card-body {
+            padding: 14px 18px;
+        }
+        .profile-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F5F3FF;
+        }
+        .profile-info-row:last-child {
+            border-bottom: none;
+        }
+        .profile-info-row .label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .profile-info-row .value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .profile-logout-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid #FEE2E2;
+            background: var(--surface);
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .profile-logout-btn:hover {
+            background: #FEF2F2;
+            border-color: var(--danger);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+        }
+
+        .profile-verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        #fab-container.is-open #fab-toggler {
+            background: var(--danger) !important;
+            transform: rotate(90deg);
+        }
+        #fab-container.is-open #fab-icon-open {
+            opacity: 0;
+            transform: scale(0);
+        }
+        #fab-container.is-open #fab-icon-close {
+            opacity: 1;
+            transform: scale(1) rotate(0);
+        }
+        #fab-container.is-open #fab-options {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #fab-options {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        #fab-options a {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 20px;
+            color: var(--text);
+        }
+        #fab-options a:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+        }
+        #fab-toggler {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            box-shadow: 0 6px 24px rgba(108, 60, 225, 0.4);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        #fab-toggler:hover {
+            transform: scale(1.05);
+        }
+        #fab-toggler:active {
+            transform: scale(0.92);
+        }
+        #fab-icon-open,
+        #fab-icon-close {
+            position: absolute;
+            transition: var(--transition);
+        }
+        #fab-icon-close {
+            opacity: 0;
+            transform: scale(0) rotate(-180deg);
+        }
+
+        @media (max-width: 400px) {
+            .nav-item .nav-icon-wrap {
+                padding: 8px 8px;
+                font-size: 12px;
+            }
+            .nav-item .nav-icon-wrap i {
+                font-size: 18px;
+            }
+        }
+
+        .game-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-hover);
+        }
+        .game-card:active {
+            transform: scale(0.96);
+        }
+        .game-card .game-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .game-card:hover .game-img {
+            transform: scale(1.05);
+        }
+
+        .auth-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(108, 60, 225, 0.10);
+            border: 1px solid #E5E0F5;
+            overflow: hidden;
+            position: relative;
+            padding: 28px 24px;
+        }
+        .auth-card .auth-header-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            overflow: hidden;
+            border: 3px solid #E5E0F5;
+            box-shadow: 0 8px 24px rgba(108, 60, 225, 0.15);
+        }
+        .auth-card .auth-header-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .auth-card .auth-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E1B4B;
+            text-align: center;
+        }
+        .auth-card .auth-sub {
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .auth-card .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 2px solid #E5E0F5;
+            background: #F8F7FF;
+            transition: var(--transition);
+            font-size: 14px;
+            color: #1E1B4B;
+        }
+        .auth-card .form-input:focus {
+            outline: none;
+            border-color: #6C3CE1;
+            box-shadow: 0 0 0 4px rgba(108, 60, 225, 0.10);
+            background: #FFFFFF;
+        }
+        .auth-card .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E1B4B;
+            margin-bottom: 4px;
+        }
+        .auth-card .auth-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #fff;
+        }
+        .auth-card .auth-btn-login {
+            background: var(--gradient-primary);
+            box-shadow: 0 4px 16px rgba(108, 60, 225, 0.35);
+        }
+        .auth-card .auth-btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(108, 60, 225, 0.45);
+        }
+        .auth-card .auth-btn-register {
+            background: linear-gradient(135deg, #06B6D4, #3B82F6);
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.35);
+        }
+        .auth-card .auth-btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(6, 182, 212, 0.45);
+        }
+        .auth-card .auth-switch {
+            text-align: center;
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 16px;
+        }
+        .auth-card .auth-switch a {
+            color: #6C3CE1;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .auth-card .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .product-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+        .product-card.selected {
+            border-color: var(--primary);
+            background: rgba(108, 60, 225, 0.06);
+            box-shadow: 0 0 0 4px rgba(108, 60, 225, 0.1);
+        }
+        .product-bullet {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            margin-right: 10px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .product-card.selected .product-bullet {
+            background: var(--primary);
+        }
+
+        .pay-option-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        .pay-option-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        .pay-option-card.selected {
+            border-color: var(--primary);
+            background: rgba(108, 60, 225, 0.04);
+            box-shadow: 0 0 0 4px rgba(108, 60, 225, 0.08);
+        }
+        .pay-option-card.selected::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--primary);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-bottom-right-radius: 8px;
+            z-index: 2;
+        }
+
+        .step-badge {
+            background: var(--gradient-primary) !important;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(108, 60, 225, 0.3);
+            flex-shrink: 0;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tutorial-card {
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .tutorial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
+        }
+        .tutorial-card .aspect-video {
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: var(--surface-alt);
+        }
+
+        .history-item {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .history-item:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-card);
+        }
+
+        .category-games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        @media (max-width: 500px) {
+            .category-games-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-content" class="relative max-w-md mx-auto bg-[#F8F7FF] min-h-screen shadow-2xl">
+
+        <!-- ===== HEADER ===== -->
+        <header class="glass sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-2">
+                <img id="header-logo-img" src="https://placehold.co/120x40?text=AURA" class="h-10 object-contain" />
+            </div>
+            <div id="header-balance-container" class="hidden bg-[#EDE9FE] px-4 py-2 rounded-full text-sm font-bold text-[#5B21B6] border border-[#D8D0F0] shadow-sm flex items-center gap-1.5">
+                <i class="fas fa-wallet text-[#6C3CE1]"></i>
+                <span>৳<span id="header-balance">0</span></span>
+            </div>
+            <div id="header-login-container">
+                <button onclick="showAuthPage()" class="btn-primary text-white px-5 py-2 rounded-full text-sm font-bold shadow-md">
+                    <i class="fas fa-sign-in-alt mr-1.5"></i> Login
+                </button>
+            </div>
+        </header>
+
+        <main class="p-3 relative pb-24">
+
+            <!-- ===== AUTH ===== -->
+            <section id="auth-sec" class="hidden animate-fade-in">
+                <div class="auth-card">
+                    <button onclick="showSec('home')" class="absolute top-4 right-4 text-[#9CA3AF] hover:text-[#EF4444] transition text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <!-- ===== LOGIN VIEW ===== -->
+                    <div id="login-view">
+                        <div class="text-center mb-6">
+                            <div class="auth-header-icon" style="background: var(--gradient-primary);">
+                                <i class="fas fa-user-astronaut text-3xl text-white"></i>
+                            </div>
+                            <h2 class="auth-title">Welcome Back</h2>
+                            <p class="auth-sub">Login to your account</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="login-email" placeholder="Enter your email" class="form-input" />
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="login-pass" placeholder="Enter your password" class="form-input" />
+                        </div>
+                        <button onclick="handleLogin()" class="auth-btn auth-btn-login">
+                            <i class="fas fa-arrow-right-to-bracket mr-2"></i> Login
+                        </button>
+                        <div class="auth-switch">
+                            Don't have an account?
+                            <a onclick="toggleAuth('register')">Create Account</a>
+                        </div>
+                    </div>
+
+                    <!-- ===== REGISTER VIEW ===== -->
+                    <div id="register-view" class="hidden">
+                        <div class="text-center mb-6">
+                            <!-- ====== লগিন পেজের লোগো সেট করা হয়েছে (আইকন) ====== -->
+                            <div class="auth-header-icon" style="background: var(--gradient-primary);">
+                                <i class="fas fa-user-astronaut text-3xl text-white"></i>
+                            </div>
+                            <h2 class="auth-title">Create Account</h2>
+                            <p class="auth-sub">Join AURA TOPUP today</p>
+                        </div>
+                        <div class="space-y-3.5 mb-5">
+                            <div>
+                                <label class="form-label">Full Name</label>
+                                <input type="text" id="reg-name" placeholder="Enter your name" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">Phone Number</label>
+                                <input type="number" id="reg-phone" placeholder="Enter phone number" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">Email Address</label>
+                                <input type="email" id="reg-email" placeholder="Enter your email" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">Password</label>
+                                <input type="password" id="reg-pass" placeholder="Create a password" class="form-input" />
+                            </div>
+                        </div>
+                        <button onclick="handleRegister()" class="auth-btn auth-btn-register">
+                            <i class="fas fa-user-plus mr-2"></i> Create Account
+                        </button>
+                        <div class="auth-switch">
+                            Already have an account?
+                            <a onclick="toggleAuth('login')">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== HOME ===== -->
+            <section id="home-sec" class="animate-fade-in pb-4">
+
+                <!-- Banner -->
+                <div id="banner-container" class="mb-5 overflow-hidden rounded-2xl shadow-lg h-44 bg-gradient-to-br from-[#EDE9FE] to-[#D8D0F0] relative group">
+                    <div id="slider-wrapper" class="flex h-full w-full transition-transform duration-500 ease-out">
+                        <div class="w-full h-full flex-shrink-0 flex items-center justify-center">
+                            <i class="fas fa-spinner fa-spin text-[#6C3CE1] text-2xl"></i>
+                        </div>
+                    </div>
+                    <div id="slider-dots" class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10"></div>
+                </div>
+
+                <!-- Games with Categories -->
+                <div id="services-list" class="space-y-6 mb-6">
+                    <div class="text-center py-10">
+                        <i class="fas fa-spinner fa-spin text-[#6C3CE1] text-3xl"></i>
+                        <p class="text-[#6B7280] mt-3 text-sm">Loading Games...</p>
+                    </div>
+                </div>
+
+                <!-- ===== LATEST ORDERS ===== -->
+                <div class="mt-6">
+                    <div class="section-title-center">
+                        <span class="title-line"></span>
+                        <i class="fas fa-clock-rotate-left title-icon"></i>
+                        <h3>Latest Orders</h3>
+                        <span class="title-line"></span>
+                    </div>
+                    <div id="latest-orders-list" class="space-y-3">
+                        <div class="latest-order-card animate-pulse">
+                            <div class="order-left">
+                                <div class="w-10 h-10 bg-[#EDE9FE] rounded-full"></div>
+                                <div class="order-info">
+                                    <div class="h-4 bg-[#EDE9FE] rounded w-24 mb-2"></div>
+                                    <div class="h-3 bg-[#EDE9FE] rounded w-32"></div>
+                                </div>
+                            </div>
+                            <div class="h-6 bg-[#EDE9FE] rounded-full w-20"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== LEADERBOARD ===== -->
+                <div class="mt-6">
+                    <div class="section-title-center">
+                        <span class="title-line"></span>
+                        <i class="fas fa-trophy title-icon" style="color: #F59E0B;"></i>
+                        <h3>Top Spenders</h3>
+                        <span class="title-line"></span>
+                    </div>
+                    <div id="leaderboard-container" class="space-y-2.5">
+                        <div class="text-center py-6 text-[#6B7280] text-sm">
+                            <i class="fas fa-spinner fa-spin text-[#6C3CE1] mr-2"></i> Loading leaderboard...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== FOOTER ===== -->
+                <div class="mt-8 bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-5">
+                    <div class="text-center mb-5">
+                        <img id="about-logo-img" src="https://placehold.co/120x40?text=AURA" class="h-10 mx-auto object-contain mb-2" />
+                        <h2 id="about-site-name" class="text-xl font-bold text-[#1E1B4B]">AURA TOPUP</h2>
+                        <p class="text-sm text-[#6B7280] mt-1">Premium Free Fire Diamond TopUp<br />Largest TopUp Site In Bangladesh</p>
+                    </div>
+
+                    <p class="text-xs text-center text-[#6B7280] mb-5 px-2 leading-relaxed">
+                        <b class="text-[#1E1B4B]">নোটিশ:</b> যেকোন অর্ডার জনিত সমস্যায় ওয়ার্সঅ্যাপে অর্ডারের স্ক্রিনশট এবং পেমেন্টের ট্রানজেকশন আইডি লিখে মেসেজ দিন। ১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণভাবে নিষিদ্ধ।
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <a id="about-facebook" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline group">
+                            <i class="fab fa-facebook-f text-lg text-[#1877F2] group-hover:scale-110 transition"></i>
+                            <span class="font-semibold text-sm text-[#1E1B4B]">Facebook</span>
+                        </a>
+                        <a id="about-youtube" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline group">
+                            <i class="fab fa-youtube text-lg text-[#FF0000] group-hover:scale-110 transition"></i>
+                            <span class="font-semibold text-sm text-[#1E1B4B]">YouTube</span>
+                        </a>
+                        <a id="about-telegram" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline group">
+                            <i class="fab fa-telegram-plane text-lg text-[#0088cc] group-hover:scale-110 transition"></i>
+                            <span class="font-semibold text-sm text-[#1E1B4B]">Telegram</span>
+                        </a>
+                        <a id="about-whatsapp" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline group">
+                            <i class="fab fa-whatsapp text-lg text-[#25D366] group-hover:scale-110 transition"></i>
+                            <span class="font-semibold text-sm text-[#1E1B4B]">WhatsApp</span>
+                        </a>
+                    </div>
+
+                    <h3 class="font-bold text-[#1E1B4B] text-base text-center mb-4">Contact Us</h3>
+                    <div class="space-y-3">
+                        <a id="contact-whatsapp" href="#" class="block bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fab fa-whatsapp text-[#25D366] text-lg"></i>
+                                    <span class="font-semibold text-sm text-[#1E1B4B]">Whatsapp HelpLine</span>
+                                </div>
+                                <span class="text-xs text-[#6B7280]">সকাল ৮টা - রাত ১২টা</span>
+                            </div>
+                        </a>
+                        <a id="contact-telegram" href="#" class="block bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fab fa-telegram-plane text-[#6C3CE1] text-lg"></i>
+                                    <span class="font-semibold text-sm text-[#1E1B4B]">Telegram HelpLine</span>
+                                </div>
+                                <span class="text-xs text-[#6B7280]">সকাল ৮টা - রাত ১২টা</span>
+                            </div>
+                        </a>
+                        <a id="contact-facebook" href="#" class="block bg-[#F0EDFF] p-3 rounded-xl border border-[#E5E0F5] hover:bg-[#EDE9FE] transition no-underline">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fab fa-facebook-f text-[#1877F2] text-lg"></i>
+                                    <span class="font-semibold text-sm text-[#1E1B4B]">Facebook HelpLine</span>
+                                </div>
+                                <span class="text-xs text-[#6B7280]">সকাল ৮টা - রাত ১২টা</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="text-center border-t border-[#E5E0F5] pt-4 mt-6">
+                        <p class="text-xs text-[#6B7280]">
+                            © 2026 AURA TOPUP | All Rights Reserved
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TUTORIAL ===== -->
+            <section id="tutorial-sec" class="hidden animate-fade-in pb-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] overflow-hidden">
+                    <div class="p-5 border-b border-[#E5E0F5]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-[#06B6D4] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-md">
+                                <i class="fas fa-graduation-cap text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-xl text-[#1E1B4B]">Video Tutorials</h2>
+                                <p class="text-sm text-[#6B7280]">Learn how to use our services</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4" id="tutorial-list-container"></div>
+                </div>
+            </section>
+
+            <!-- ===== HISTORY ===== -->
+            <section id="history-sec" class="hidden animate-fade-in pb-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] overflow-hidden">
+                    <div class="p-5 border-b border-[#E5E0F5]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-xl flex items-center justify-center shadow-md">
+                                <i class="fas fa-clock-rotate-left text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-xl text-[#1E1B4B]">Order History</h2>
+                                <p class="text-sm text-[#6B7280]">View all your past orders</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="history-list" class="p-4 space-y-3"></div>
+                </div>
+            </section>
+
+            <!-- ===== TOPUP ===== -->
+            <section id="topup-sec" class="hidden animate-fade-in pb-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-4 mb-4 flex items-center gap-4 relative">
+                    <button onclick="showSec('home')" class="absolute top-3 right-3 text-[#9CA3AF] hover:text-[#EF4444] transition text-lg w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <img id="topup-game-img" src="" class="w-16 h-16 rounded-xl object-cover shadow-sm border border-[#E5E0F5]" />
+                    <div>
+                        <h3 class="font-bold text-[#1E1B4B] text-lg" id="topup-game-title">Game Name</h3>
+                        <p class="text-xs text-[#6B7280] font-medium" id="topup-sub-title">Game / Topup</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-4 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="step-badge">1</span>
+                        <h3 class="font-bold text-[#1E1B4B]">Select Recharge Package</h3>
+                    </div>
+                    <div id="products-grid" class="grid grid-cols-2 gap-2.5"></div>
+                </div>
+
+                <div id="player-id-section" class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-4 mb-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="step-badge">2</span>
+                        <h3 class="font-bold text-[#1E1B4B]">Account Info</h3>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Player ID</label>
+                        <input type="text" id="game-player-id" placeholder="Enter your Player ID" class="w-full px-4 py-3 rounded-xl border border-[#E5E0F5] focus:outline-none focus:border-[#6C3CE1] focus:ring-2 focus:ring-[#6C3CE1]/20 transition-all bg-[#F8F7FF] text-sm" />
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-4 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="step-badge">3</span>
+                        <h3 class="font-bold text-[#1E1B4B]">Select Payment Method</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div onclick="selectPaymentOption('wallet')" id="opt-wallet" class="pay-option-card selected">
+                            <div class="h-20 flex flex-col items-center justify-center p-2">
+                                <i class="fas fa-wallet text-2xl text-[#6C3CE1]"></i>
+                                <span class="font-bold text-sm text-[#1E1B4B] mt-1">Wallet</span>
+                            </div>
+                            <div class="bg-[#EDE9FE] text-center py-1.5 text-xs font-bold text-[#6B7280]">Wallet Pay</div>
+                        </div>
+                        <div onclick="selectPaymentOption('instant')" id="opt-instant" class="pay-option-card">
+                            <div class="h-20 flex items-center justify-center gap-2 p-2">
+                                <img src="https://i.ibb.co.com/7N6nH6P6/images.png" class="h-6 object-contain" />
+                                <img src="https://i.ibb.co.com/LDLfDhC9/images.jpg" class="h-5 object-contain" />
+                                <img src="https://i.ibb.co.com/mr7Hs740/images-1.png" class="h-6 object-contain" />
+                            </div>
+                            <div class="bg-[#EDE9FE] text-center py-1.5 text-xs font-bold text-[#6B7280]">Instant Pay</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4 px-1">
+                        <i class="fas fa-info-circle text-[#9CA3AF] text-xs"></i>
+                        <p class="text-[11px] text-[#6B7280]">Balance: <span class="text-[#6C3CE1] font-bold">৳<span id="topup-balance-display">0.00</span></span></p>
+                    </div>
+                    <div class="flex items-center justify-between bg-[#F5F3FF] border border-[#E5E0F5] rounded-xl px-4 py-3 mb-3">
+                        <span class="text-sm font-semibold text-[#6B7280]">Total Amount</span>
+                        <span class="text-xl font-bold text-[#6C3CE1]">৳<span id="total-price">0</span></span>
+                    </div>
+                    <button onclick="processOrder()" class="btn-primary w-full py-3.5 rounded-xl font-bold text-base">
+                        <i class="fas fa-bolt mr-2"></i> Buy Now
+                    </button>
+                </div>
+            </section>
+
+            <!-- ===== ADD MONEY ===== -->
+            <section id="addmoney-sec" class="hidden animate-fade-in pb-4">
+                <div id="am-step-1" class="step-transition">
+                    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-5 mb-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-xl flex items-center justify-center shadow-md">
+                                <i class="fas fa-plus-circle text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-xl text-[#1E1B4B]">Add Money</h2>
+                                <p class="text-sm text-[#6B7280]">Deposit to your wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-6 text-center">
+                        <label class="block text-[#6B7280] text-sm font-semibold mb-3 uppercase tracking-wider">Enter Amount</label>
+                        <div class="relative mb-5 max-w-[200px] mx-auto">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-[#9CA3AF]">৳</span>
+                            <input type="number" id="new-amount-input" value="100" class="w-full border-b-2 border-[#E5E0F5] py-2 pl-8 pr-2 text-center text-3xl font-bold text-[#1E1B4B] focus:outline-none focus:border-[#6C3CE1] transition-all bg-transparent" />
+                        </div>
+                        <button onclick="goToMethodStep()" class="btn-primary w-full py-3.5 rounded-xl font-bold text-base">
+                            <i class="fas fa-arrow-right mr-2"></i> Proceed to Payment
+                        </button>
+                    </div>
+                </div>
+
+                <div id="am-step-2" class="hidden step-transition min-h-[70vh]">
+                    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-3 flex items-center justify-between sticky top-0 z-10 mb-4">
+                        <button onclick="backToAmountStep()" class="text-[#6B7280] w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#EDE9FE] transition">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <button onclick="showSec('home')" class="text-[#9CA3AF] w-9 h-9 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-[#EF4444] transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-col items-center justify-center px-6 py-8">
+                        <div class="bg-gradient-to-br from-[#EDE9FE] to-[#D8D0F0] rounded-full w-28 h-28 flex items-center justify-center shadow-lg mb-5">
+                            <i class="fas fa-wallet text-4xl text-[#6C3CE1]"></i>
+                        </div>
+                        <h2 class="text-[#6B7280] font-medium text-lg mb-6">Select Payment Method</h2>
+                        <div class="w-full bg-gradient-to-r from-[#1E1B4B] to-[#2D2A5E] text-white py-2.5 text-center text-sm font-bold rounded-t-xl shadow-md">
+                            <i class="fas fa-mobile-screen-button mr-2"></i> Mobile Banking
+                        </div>
+                        <div class="w-full grid grid-cols-3 gap-3 bg-white p-4 rounded-b-xl shadow-sm border border-[#E5E0F5] border-t-0">
+                            <button onclick="goToPaymentPage('bKash', '#E2136E')" class="bg-white border-2 border-[#E5E0F5] rounded-xl p-3 flex items-center justify-center hover:border-[#E2136E] hover:shadow-md transition h-16">
+                                <img src="https://i.ibb.co.com/7N6nH6P6/images.png" class="h-8 object-contain" />
+                            </button>
+                            <button onclick="goToPaymentPage('Nagad', '#F7941D')" class="bg-white border-2 border-[#E5E0F5] rounded-xl p-3 flex items-center justify-center hover:border-[#F7941D] hover:shadow-md transition h-16">
+                                <img src="https://i.ibb.co.com/LDLfDhC9/images.jpg" class="h-6 object-contain" />
+                            </button>
+                            <button onclick="goToPaymentPage('Rocket', '#8C3494')" class="bg-white border-2 border-[#E5E0F5] rounded-xl p-3 flex items-center justify-center hover:border-[#8C3494] hover:shadow-md transition h-16">
+                                <img src="https://i.ibb.co.com/mr7Hs740/images-1.png" class="h-6 object-contain" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="am-step-3" class="hidden step-transition pb-24">
+                    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-3 flex items-center justify-between sticky top-0 z-20 mb-4">
+                        <button onclick="backToMethodStep()" class="text-[#6B7280] w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#EDE9FE] transition">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <button onclick="showSec('home')" class="text-[#9CA3AF] w-9 h-9 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-[#EF4444] transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="text-center py-4">
+                        <img id="pay-method-logo" src="" class="h-12 mx-auto object-contain" />
+                    </div>
+                    <div class="px-1">
+                        <div class="bg-white rounded-2xl shadow-sm border border-[#E5E0F5] p-4 mb-4 flex items-center gap-2">
+                            <span class="text-xl font-bold text-[#1E1B4B]">৳</span>
+                            <span id="pay-amount-display" class="text-2xl font-bold text-[#1E1B4B]">100</span>
+                        </div>
+                        <div id="payment-theme-card" class="rounded-2xl shadow-xl overflow-hidden text-white mb-6 relative transition-all duration-300" style="background: linear-gradient(135deg, #1E1B4B, #2D2A5E);">
+                            <div class="p-5 text-center">
+                                <h3 class="font-bold text-lg mb-4 drop-shadow-md">Enter Transaction ID</h3>
+                                <input type="text" id="pay-trx-input" class="w-full bg-white/20 text-white text-center py-3.5 rounded-xl text-sm font-bold shadow-inner focus:outline-none focus:ring-2 focus:ring-white/50 placeholder-white/60 backdrop-blur-sm" placeholder="Enter Transaction ID" />
+                            </div>
+                            <div class="bg-black/20 p-5 text-sm space-y-3 backdrop-blur-sm border-t border-white/20">
+                                <div class="flex gap-2"><span class="mt-0.5 text-white/60">•</span><p>Dial *247# or open <span class="method-name font-bold text-white">bKash</span> app</p></div>
+                                <div class="flex gap-2"><span class="mt-0.5 text-white/60">•</span><p>Click "Send Money"</p></div>
+                                <div class="flex flex-col gap-1 pl-3">
+                                    <p>Send to this number:</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span id="pay-admin-number" class="text-2xl font-bold text-yellow-300 tracking-wider">Loading...</span>
+                                        <button onclick="copyPayNumber()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded text-[10px] font-bold transition flex items-center gap-1.5 border border-white/20">
+                                            <i class="far fa-copy"></i> COPY
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2"><span class="mt-0.5 text-white/60">•</span><p>Amount: <span id="pay-amount-text" class="font-bold text-yellow-300">100</span></p></div>
+                                <div class="flex gap-2"><span class="mt-0.5 text-white/60">•</span><p>Enter your <span class="method-name font-bold text-white">bKash</span> PIN to confirm</p></div>
+                                <div class="flex gap-2"><span class="mt-0.5 text-white/60">•</span><p class="font-bold text-yellow-200">Enter Transaction ID above and click VERIFY</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#E5E0F5] max-w-md mx-auto z-50 rounded-t-2xl shadow-lg">
+                        <button onclick="handleNewVerify()" class="btn-primary w-full py-3.5 rounded-xl font-bold text-lg tracking-wider">
+                            <i class="fas fa-check-circle mr-2"></i> VERIFY
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== ACCOUNT ===== -->
+            <section id="account-sec" class="hidden animate-fade-in pb-4">
+
+                <div class="profile-header-card">
+                    <div class="profile-avatar" id="profile-avatar-container">
+                        <img id="acc-profile-img" src="" class="hidden" />
+                        <span id="profile-initial">U</span>
+                    </div>
+                    <h2 class="profile-name" id="acc-profile-name">User</h2>
+                    <p class="profile-email" id="acc-email">user@email.com</p>
+                    <div class="profile-balance-badge">
+                        <i class="fas fa-wallet"></i>
+                        <span>৳<span id="acc-profile-balance">0</span></span>
+                    </div>
+                    <div class="mt-3">
+                        <span class="profile-verified-badge">
+                            <i class="fas fa-check-circle"></i> Verified Account
+                        </span>
+                    </div>
+                </div>
+
+                <div class="profile-stat-grid">
+                    <div class="profile-stat-item stat-border-1">
+                        <span class="stat-icon"><i class="fas fa-key" style="color:#F59E0B;"></i></span>
+                        <div class="stat-value" id="acc-support-pin">---</div>
+                        <div class="stat-label">Support Pin</div>
+                    </div>
+                    <div class="profile-stat-item stat-border-2">
+                        <span class="stat-icon"><i class="fas fa-chart-line" style="color:#3B82F6;"></i></span>
+                        <div class="stat-value"><span id="acc-weekly-spent">0</span>৳</div>
+                        <div class="stat-label">Weekly Spent</div>
+                    </div>
+                    <div class="profile-stat-item stat-border-3">
+                        <span class="stat-icon"><i class="fas fa-coins" style="color:#10B981;"></i></span>
+                        <div class="stat-value" id="acc-total-spent">0</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="profile-stat-item stat-border-4">
+                        <span class="stat-icon"><i class="fas fa-shopping-bag" style="color:#EC407A;"></i></span>
+                        <div class="stat-value" id="acc-total-orders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <i class="fas fa-user-circle text-[#6C3CE1]"></i>
+                        User Information
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="profile-info-row">
+                            <span class="label"><i class="fas fa-envelope mr-2 text-[#9CA3AF]"></i>Email</span>
+                            <span class="value" id="acc-email-display">user@email.com</span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="label"><i class="fas fa-phone mr-2 text-[#9CA3AF]"></i>Phone</span>
+                            <span class="value" id="acc-phone">Not Available</span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="label"><i class="fas fa-wallet mr-2 text-[#9CA3AF]"></i>Balance</span>
+                            <span class="value text-[#6C3CE1]">৳<span id="acc-balance-card">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="handleLogout()" class="profile-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Log Out
+                </button>
+
+            </section>
+
+        </main>
+
+        <!-- ===== FAB ===== -->
+        <div id="fab-container" class="fixed bottom-20 right-4 z-50">
+            <div class="flex items-center gap-2">
+                <div id="fab-help-text" class="bg-[#1E1B4B] text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg transition-opacity duration-300">
+                    <i class="fab fa-telegram-plane mr-1.5"></i> Need Help?
+                </div>
+                <div class="relative flex flex-col items-center">
+                    <div id="fab-options" class="absolute bottom-14 left-1/2 -translate-x-1/2 space-y-2 transition-all duration-300 ease-out transform translate-y-4 opacity-0 pointer-events-none">
+                        <a id="link-telegram" href="#" target="_blank" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-300 no-underline border border-[#E5E0F5]">
+                            <i class="fab fa-telegram-plane text-2xl text-[#0088cc]"></i>
+                        </a>
+                        <a id="link-whatsapp" href="#" target="_blank" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-300 no-underline border border-[#E5E0F5]">
+                            <i class="fab fa-whatsapp text-2xl text-[#25D366]"></i>
+                        </a>
+                    </div>
+                    <button id="fab-toggler" onclick="toggleFabMenu()" class="relative w-14 h-14 rounded-full bg-gradient-to-br from-[#0088cc] to-[#2D7EB5] border-none text-white text-2xl shadow-xl transition-all duration-300 ease-in-out hover:scale-105 focus:outline-none flex items-center justify-center">
+                        <i id="fab-icon-open" class="fab fa-telegram-plane transition-all duration-300"></i>
+                        <i id="fab-icon-close" class="fas fa-times absolute transition-all duration-300 transform scale-0 opacity-0 -rotate-180"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BOTTOM NAV ===== -->
+        <div class="fixed bottom-3 left-3 right-3 max-w-md mx-auto z-40">
+            <nav class="glass-dark rounded-2xl shadow-2xl px-1.5 py-1.5 flex justify-between items-center gap-0.5 border border-white/10">
+                <button onclick="showSec('home')" class="nav-item active-tab" id="nav-home">
+                    <div class="nav-icon-wrap"><i class="fas fa-house"></i></div>
+                </button>
+                <button onclick="showSec('tutorial')" class="nav-item" id="nav-tutorial">
+                    <div class="nav-icon-wrap"><i class="fas fa-graduation-cap"></i></div>
+                </button>
+                <button onclick="showSec('addmoney')" class="nav-item" id="nav-addmoney">
+                    <div class="nav-icon-wrap"><i class="fas fa-wallet"></i></div>
+                </button>
+                <button onclick="showSec('history')" class="nav-item" id="nav-history">
+                    <div class="nav-icon-wrap"><i class="fas fa-clock-rotate-left"></i></div>
+                </button>
+                <button onclick="showSec('account')" class="nav-item" id="nav-account">
+                    <div class="nav-icon-wrap"><i class="fas fa-user"></i></div>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWmR1qt_gsuZXaVSkSw5JLOw729yvwRss",
+            authDomain: "aura-top-up-20544.firebaseapp.com",
+            databaseURL: "https://aura-top-up-20544-default-rtdb.firebaseio.com",
+            projectId: "aura-top-up-20544",
+            storageBucket: "aura-top-up-20544.firebasestorage.app",
+            messagingSenderId: "688118835785",
+            appId: "1:688118835785:web:cdb166e611524f1c956d98",
+            measurementId: "G-7P5RMJP4BL"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        // মোবাইল/WebView এ connection hang ঠেকাতে
+        db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
+        const auth = firebase.auth();
+        const rtdb = firebase.database();
+
+        let currentUser = null;
+        let userBalance = 0;
+        let selectedProduct = null;
+        let selectedGameId = null;
+        let selectedGameName = "";
+        let selectedGameType = 'uid';
+        let gamesData = {};
+        let isAutoPayEnabled = true;
+        let selectedPaymentMethod = 'wallet';
+        let isDirectBuy = false;
+        let pendingDirectOrder = null;
+        let currentDepositAmount = 0;
+        let currentPaymentMethod = '';
+
+        // ===== FUNCTIONS =====
+
+        function updateFabVisibility(section) {
+            const fab = document.getElementById('fab-container');
+            fab.style.display = section === 'home' ? 'flex' : 'none';
+        }
+
+        function toggleAuth(view) {
+            document.getElementById('login-view').classList.toggle('hidden', view !== 'login');
+            document.getElementById('register-view').classList.toggle('hidden', view !== 'register');
+        }
+
+        function showAuthPage() { showSec('auth'); }
+
+        function showSec(secId) {
+            if ((secId === 'history' || secId === 'account' || secId === 'addmoney') && !currentUser) {
+                showSec('auth');
+                return;
+            }
+            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-tab'));
+            const target = document.getElementById(secId + '-sec');
+            if (target) target.classList.remove('hidden');
+            const navBtn = document.getElementById('nav-' + secId);
+            if (navBtn) navBtn.classList.add('active-tab');
+            updateFabVisibility(secId);
+            if (secId === 'addmoney') {
+                document.getElementById('am-step-1').classList.remove('hidden');
+                document.getElementById('am-step-2').classList.add('hidden');
+                document.getElementById('am-step-3').classList.add('hidden');
+            }
+            if (secId === 'history') loadHistory();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+
+        function toggleFabMenu() {
+            const fc = document.getElementById('fab-container');
+            fc.classList.toggle('is-open');
+            document.getElementById('fab-help-text').classList.toggle('opacity-0', fc.classList.contains('is-open'));
+        }
+
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            el.style.position = 'fixed';
+            el.style.opacity = '0';
+            document.body.appendChild(el);
+            el.focus();
+            el.select();
+            try { document.execCommand('copy'); } catch (e) { console.error(e); }
+            document.body.removeChild(el);
+        }
+
+        function copyPayNumber() {
+            const num = document.getElementById('pay-admin-number').innerText;
+            copyTextToClipboard(num);
+            Swal.fire({ toast: true, icon: 'success', title: 'Number Copied!', position: 'top', showConfirmButton: false,
+                timer: 1500 });
+        }
+
+        // ===== AUTH =====
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const phone = document.getElementById('reg-phone').value;
+            if (!name || !email || !pass || !phone) return Swal.fire('Error', 'Please fill all fields', 'error');
+            Swal.showLoading();
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then((cred) => db.collection('users').doc(cred.user.uid).set({
+                    name,
+                    email,
+                    phone,
+                    balance: 0,
+                    createdAt: new Date()
+                }))
+                .then(() => { Swal.fire('Success', 'Account Created Successfully!', 'success');
+                    showSec('home'); })
+                .catch((err) => Swal.fire('Error', err.message, 'error'));
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            if (!email || !pass) return Swal.fire('Error', 'Please fill all fields', 'error');
+            Swal.showLoading();
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(() => { showSec('home');
+                    Swal.close(); })
+                .catch((err) => Swal.fire('Login Failed', err.message, 'error'));
+        }
+
+        function handleLogout() {
+            Swal.fire({
+                title: 'Logout?',
+                text: 'Are you sure?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                confirmButtonText: 'Logout',
+                cancelButtonText: 'Cancel'
+            }).then((result) => { if (result.isConfirmed) auth.signOut().then(() => showSec('home')); });
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('header-login-container').classList.add('hidden');
+                document.getElementById('header-balance-container').classList.remove('hidden');
+                loadUserData(user.uid);
+                calculateUserStats(user.uid);
+            } else {
+                currentUser = null;
+                document.getElementById('header-login-container').classList.remove('hidden');
+                document.getElementById('header-balance-container').classList.add('hidden');
+            }
+        });
+
+        function loadUserData(uid) {
+            db.collection('users').doc(uid).onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    userBalance = data.balance || 0;
+                    document.getElementById('header-balance').innerText = userBalance;
+                    document.getElementById('topup-balance-display').innerText = userBalance.toFixed(2);
+
+                    const img = document.getElementById('acc-profile-img');
+                    const init = document.getElementById('profile-initial');
+                    if (data.photoURL) {
+                        img.src = data.photoURL;
+                        img.classList.remove('hidden');
+                        init.classList.add('hidden');
+                    } else {
+                        img.classList.add('hidden');
+                        init.classList.remove('hidden');
+                        init.innerText = (data.name || 'U').charAt(0).toUpperCase();
+                    }
+                    document.getElementById('acc-profile-name').innerText = data.name || 'User';
+                    document.getElementById('acc-email').innerText = data.email || '';
+                    document.getElementById('acc-email-display').innerText = data.email || '';
+                    document.getElementById('acc-phone').innerText = data.phone || 'Not Available';
+                    document.getElementById('acc-profile-balance').innerText = userBalance;
+                    document.getElementById('acc-balance-card').innerText = userBalance.toFixed(2);
+                    document.getElementById('acc-support-pin').innerText = uid.substring(0, 6).toUpperCase();
+                }
+            });
+        }
+
+        function calculateUserStats(uid) {
+            db.collection('orders').where('userId', '==', uid).get().then((snapshot) => {
+                let totalOrders = 0,
+                    totalSpent = 0,
+                    weeklySpent = 0;
+                const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    totalOrders++;
+                    const status = (data.status || '').toLowerCase();
+                    if (['success', 'complete', 'completed', 'pending'].includes(status)) {
+                        const price = parseInt(data.price || 0);
+                        totalSpent += price;
+                        if (data.date) {
+                            const d = data.date.toDate ? data.date.toDate() : new Date(data.date);
+                            if (d >= oneWeekAgo) weeklySpent += price;
+                        }
+                    }
+                });
+                document.getElementById('acc-total-orders').innerText = totalOrders;
+                document.getElementById('acc-total-spent').innerText = totalSpent;
+                document.getElementById('acc-weekly-spent').innerText = weeklySpent;
+            });
+        }
+
+        // ===== LOAD DATA =====
+        function loadGlobalSettings() {
+            db.collection("settings").doc("general").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const logo = data.logoUrl || "https://placehold.co/120x40?text=AURA";
+                    isAutoPayEnabled = data.autoPayEnabled === true;
+                    document.getElementById('header-logo-img').src = logo;
+                    document.getElementById('about-logo-img').src = logo;
+                    document.title = data.siteName || "AURA TOPUP";
+                }
+            });
+        }
+
+        function loadAppContent() {
+            db.collection("settings").doc("general").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    const wa = d.whatsapp ? String(d.whatsapp).replace(/\s/g, '') : "0";
+                    const tg = d.telegram || "#";
+                    const fb = d.facebook || "#";
+                    const yt = d.youtube || "#";
+                    const waLink = `https://wa.me/${wa}`;
+                    document.getElementById('link-whatsapp').href = waLink;
+                    document.getElementById('link-telegram').href = tg;
+                    document.getElementById('about-facebook').href = fb;
+                    document.getElementById('about-youtube').href = yt;
+                    document.getElementById('about-telegram').href = tg;
+                    document.getElementById('about-whatsapp').href = waLink;
+                    document.getElementById('contact-whatsapp').href = waLink;
+                    document.getElementById('contact-telegram').href = tg;
+                    document.getElementById('contact-facebook').href = fb;
+                }
+            });
+            loadGamesAndCategories();
+            loadTutorials();
+            loadRecentOrdersGlobal();
+            loadLeaderboard();
+        }
+
+        // ===== LOAD GAMES WITH CATEGORIES =====
+        function loadGamesAndCategories() {
+            const container = document.getElementById('services-list');
+            container.innerHTML = `<div class="text-center py-10"><i class="fas fa-spinner fa-spin text-[#6C3CE1] text-3xl"></i><p class="text-[#6B7280] mt-3 text-sm">Loading Games...</p></div>`;
+            gamesData = {};
+
+            db.collection("categories").orderBy("slot").get().then((catSnap) => {
+                let categories = {};
+                catSnap.forEach(doc => {
+                    categories[doc.id] = { id: doc.id, name: doc.data().name, games: [] };
+                });
+
+                return db.collection("services").get().then((gameSnap) => {
+                    let uncategorizedGames = [];
+
+                    gameSnap.forEach(doc => {
+                        const game = { id: doc.id, ...doc.data() };
+                        gamesData[doc.id] = game;
+
+                        if (game.categoryId && categories[game.categoryId]) {
+                            categories[game.categoryId].games.push(game);
+                        } else {
+                            uncategorizedGames.push(game);
+                        }
+                    });
+
+                    let html = '<div class="space-y-6">';
+                    let hasGames = false;
+
+                    for (const catId in categories) {
+                        const cat = categories[catId];
+                        if (cat.games.length > 0) {
+                            hasGames = true;
+                            html += `
+                                <div>
+                                    <div class="section-title-center">
+                                        <span class="title-line"></span>
+                                        <i class="fas fa-gamepad title-icon"></i>
+                                        <h3>${cat.name}</h3>
+                                        <span class="title-line"></span>
+                                    </div>
+                                    <div class="category-games-grid mt-3">
+                            `;
+                            cat.games.forEach(game => {
+                                html += `
+                                    <div onclick="openTopUpPage('${game.id}','${game.name}','${game.image||'https://placehold.co/200x200'}')" 
+                                         class="game-card">
+                                        <img src="${game.image||'https://placehold.co/200x200'}" class="game-img" onerror="this.src='https://placehold.co/200x200?text=Game'" />
+                                        <div class="p-2.5 text-center bg-white">
+                                            <p class="text-xs font-bold text-[#1E1B4B] line-clamp-2">${game.name}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            html += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    if (uncategorizedGames.length > 0) {
+                        hasGames = true;
+                        html += `
+                            <div>
+                                <div class="section-title-center">
+                                    <span class="title-line" style="background: #9CA3AF;"></span>
+                                    <i class="fas fa-folder-open title-icon" style="color:#9CA3AF;"></i>
+                                    <h3 style="color:#6B7280;">Uncategorized</h3>
+                                    <span class="title-line" style="background: #9CA3AF;"></span>
+                                </div>
+                                <div class="category-games-grid mt-3">
+                        `;
+                        uncategorizedGames.forEach(game => {
+                            html += `
+                                <div onclick="openTopUpPage('${game.id}','${game.name}','${game.image||'https://placehold.co/200x200'}')" 
+                                     class="game-card">
+                                    <img src="${game.image||'https://placehold.co/200x200'}" class="game-img" onerror="this.src='https://placehold.co/200x200?text=Game'" />
+                                    <div class="p-2.5 text-center bg-white">
+                                        <p class="text-xs font-bold text-[#1E1B4B] line-clamp-2">${game.name}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    html += '</div>';
+
+                    if (!hasGames) {
+                        container.innerHTML = `
+                            <div class="text-center py-10">
+                                <i class="fas fa-gamepad text-4xl block mb-3 opacity-40" style="color:#6C3CE1;"></i>
+                                <p class="text-[#6B7280] font-medium">No Games Found</p>
+                                <p class="text-sm text-[#9CA3AF]">Check back later for new games!</p>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = html;
+                    }
+                });
+            }).catch((error) => {
+                console.error("Error loading categories/games:", error);
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <i class="fas fa-exclamation-circle text-3xl block mb-3 text-[#EF4444]"></i>
+                        <p class="text-[#EF4444] font-medium">Failed to load games</p>
+                        <p class="text-sm text-[#9CA3AF]">Please try again later</p>
+                    </div>
+                `;
+            });
+        }
+
+        function loadTutorials() {
+            db.collection("tutorials").onSnapshot((snap) => {
+                const container = document.getElementById('tutorial-list-container');
+                if (snap.empty) {
+                    container.innerHTML =
+                        `<div class="text-center py-12"><div class="w-16 h-16 bg-[#EDE9FE] rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-video text-[#6C3CE1] text-2xl"></i></div><p class="text-[#6B7280] text-sm">No tutorials available</p></div>`;
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `
+                        <div class="tutorial-card">
+                            <div class="relative" onclick="window.open('${d.link}','_blank')">
+                                <div class="aspect-video bg-[#EDE9FE] overflow-hidden">
+                                    <img src="${d.thumbnail}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/400x225?text=Tutorial'" />
+                                </div>
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                                    <div class="bg-white/90 backdrop-blur-sm rounded-full w-14 h-14 flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-play text-[#6C3CE1] text-xl ml-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-[#1E1B4B] text-sm line-clamp-2">${d.title}</h3>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <span class="text-xs text-[#6B7280]"><i class="far fa-clock mr-1"></i> Watch now</span>
+                                    <button onclick="window.open('${d.link}','_blank')" class="bg-[#EDE9FE] text-[#6C3CE1] px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-[#D8D0F0] transition-colors">
+                                        <i class="fas fa-external-link-alt mr-1"></i> Watch
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function loadRecentOrdersGlobal() {
+            const container = document.getElementById('latest-orders-list');
+            db.collection('orders').orderBy('date', 'desc').limit(5).onSnapshot((snap) => {
+                if (snap.empty) {
+                    container.innerHTML =
+                        `<div class="text-center py-6 text-[#6B7280] text-sm"><i class="fas fa-inbox text-3xl block mb-2 opacity-30"></i>No recent orders</div>`;
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    let name = data.userName || 'Customer';
+                    if (name.includes('@')) name = name.split('@')[0];
+                    const initial = name.charAt(0).toUpperCase();
+                    const status = (data.status || 'pending').toLowerCase();
+                    let statusClass = 'status-pending',
+                        statusText = 'Pending',
+                        icon = 'fa-clock';
+                    if (['success', 'complete', 'completed'].includes(status)) {
+                        statusClass = 'status-success';
+                        statusText = 'Completed';
+                        icon = 'fa-check-circle';
+                    }
+                    html += `
+                        <div class="latest-order-card">
+                            <div class="order-left">
+                                <div class="order-avatar">${initial}</div>
+                                <div class="order-info">
+                                    <div class="name">${name}</div>
+                                    <div class="detail">${data.productName || 'Product'} - ৳${data.price||0}</div>
+                                </div>
+                            </div>
+                            <div class="order-status ${statusClass}"><i class="fas ${icon}"></i> ${statusText}</div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        // ===== LEADERBOARD =====
+        function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            db.collection('orders').where('status', 'in', ['success', 'completed', 'complete']).get().then((snap) => {
+                const spends = {};
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const uid = d.userId;
+                    const amt = parseInt(d.price) || 0;
+                    if (uid) {
+                        if (!spends[uid]) spends[uid] = { total: 0, name: d.userName || 'User' };
+                        spends[uid].total += amt;
+                    }
+                });
+                const sorted = Object.entries(spends).sort((a, b) => b[1].total - a[1].total).slice(0, 10);
+                if (sorted.length === 0) {
+                    container.innerHTML =
+                        `<div class="text-center py-8 text-[#6B7280] text-sm"><i class="fas fa-trophy text-3xl block mb-3 opacity-30"></i>No data yet. Be the first!</div>`;
+                    return;
+                }
+                let html = '';
+                sorted.forEach(([uid, data], i) => {
+                    const rank = i + 1;
+                    let rClass = 'rank-other',
+                        emoji = rank;
+                    if (rank === 1) { rClass = 'rank-1';
+                        emoji = '🥇'; } else if (rank === 2) { rClass = 'rank-2';
+                        emoji = '🥈'; } else if (rank === 3) { rClass = 'rank-3';
+                        emoji = '🥉'; }
+                    const displayName = data.name && data.name.includes('@') ? data.name.split('@')[0] : (data.name ||
+                    'User');
+                    html += `
+                        <div class="leaderboard-card">
+                            <div class="rank-circle ${rClass}">${emoji}</div>
+                            <div class="user-detail"><div class="name">${displayName}</div></div>
+                            <div class="spend-box"><div class="amount">৳${data.total}</div><div class="label">Spent</div></div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            }).catch(() => {
+                container.innerHTML =
+                    `<div class="text-center py-6 text-[#EF4444] text-sm"><i class="fas fa-exclamation-circle mr-1"></i>Failed to load</div>`;
+            });
+        }
+
+        // ===== HISTORY =====
+        function loadHistory() {
+            const list = document.getElementById('history-list');
+            if (!currentUser) {
+                list.innerHTML =
+                    `<div class="text-center py-8 text-[#6B7280]"><i class="fas fa-lock text-2xl block mb-2 opacity-40"></i><p>Please login</p></div>`;
+                return;
+            }
+            list.innerHTML =
+                `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-[#6C3CE1] text-2xl"></i><p class="text-[#6B7280] text-sm mt-2">Loading...</p></div>`;
+            db.collection('orders').where('userId', '==', currentUser.uid).limit(50).get().then((snap) => {
+                if (snap.empty) {
+                    list.innerHTML =
+                        `<div class="text-center py-10 text-[#6B7280]"><i class="fas fa-inbox text-3xl block mb-3 opacity-40"></i><p>No orders</p></div>`;
+                    return;
+                }
+                const orders = [];
+                snap.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+                orders.sort((a, b) => (b.date?.toDate?.() || new Date(0)) - (a.date?.toDate?.() || new Date(0)));
+                let html = '';
+                orders.forEach(d => {
+                    const status = (d.status || 'pending').toLowerCase();
+                    let sColor = 'bg-[#F59E0B]',
+                        icon = 'fa-clock';
+                    if (['success', 'complete', 'completed'].includes(status)) { sColor = 'bg-[#10B981]';
+                        icon = 'fa-check-circle'; } else if (['cancel', 'rejected'].includes(status)) { sColor =
+                            'bg-[#EF4444]';
+                        icon = 'fa-times-circle'; }
+                    const dateStr = d.date?.toDate?.() ? d.date.toDate().toLocaleString('en-US', { month: 'short',
+                        day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : 'N/A';
+                    html += `
+                        <div class="history-item">
+                            <div class="flex justify-between items-start mb-2">
+                                <div><h4 class="font-bold text-[#1E1B4B] text-sm">${d.gameName||'Game'}</h4><p class="text-xs text-[#6B7280]">${dateStr}</p></div>
+                                <div class="text-right"><p class="text-lg font-bold text-[#6C3CE1]">৳${d.price||0}</p><span class="text-xs font-medium ${sColor} text-white px-2 py-0.5 rounded-full capitalize">${status}</span></div>
+                            </div>
+                            <div class="border-t border-[#E5E0F5] pt-2 mt-2">
+                                <p class="text-xs font-medium text-[#6B7280]">${d.productName||'Product'}</p>
+                                ${d.redeemCode ? `<div class="mt-2 bg-[#10B981]/10 border border-[#10B981]/30 rounded-xl p-3 text-center"><p class="text-[10px] text-[#10B981] font-bold uppercase">Voucher</p><p class="text-sm font-mono font-bold text-[#1E1B4B] break-all">${d.redeemCode}</p></div>` : `<div class="mt-2 inline-block bg-[#EDE9FE] rounded-lg px-3 py-1"><p class="text-[10px] text-[#6B7280] font-mono">ID: <span class="text-[#1E1B4B] font-bold">${d.playerId||'N/A'}</span></p></div>`}
+                            </div>
+                        </div>`;
+                });
+                list.innerHTML = html;
+            }).catch(() => {
+                list.innerHTML =
+                    `<div class="text-center py-6 text-[#EF4444] text-sm"><i class="fas fa-exclamation-circle mr-1"></i>Error loading</div>`;
+            });
+        }
+
+        // ===== TOPUP =====
+        function openTopUpPage(gameId, gameName, gameImg) {
+            selectedGameId = gameId;
+            selectedGameName = gameName;
+            selectedProduct = null;
+            selectedGameType = gamesData[gameId]?.type || 'uid';
+            document.getElementById('total-price').innerText = "0";
+            document.getElementById('game-player-id').value = "";
+            document.getElementById('topup-game-title').innerText = gameName;
+            document.getElementById('topup-game-img').src = gameImg;
+            document.getElementById('topup-sub-title').innerText = gameName + ' (Topup)';
+            showSec('topup');
+
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML =
+                `<div class="col-span-2 text-center py-4 text-[#6B7280]"><i class="fas fa-spinner fa-spin mr-2"></i>Loading packages...</div>`;
+            db.collection('services').doc(gameId).collection('products').orderBy('price', 'asc').get().then((snap) => {
+                if (snap.empty) {
+                    grid.innerHTML =
+                        `<div class="col-span-2 text-center py-6 text-[#6B7280]"><i class="fas fa-box-open text-2xl block mb-2 opacity-40"></i><p class="text-sm">No packages</p></div>`;
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    const prod = doc.data();
+                    html += `
+                        <div onclick="selectProduct(this,'${prod.name}',${prod.price},'${doc.id}')" 
+                             class="product-card">
+                            <div class="flex items-center">
+                                <div class="product-bullet"></div>
+                                <span class="text-xs font-bold text-[#1E1B4B]">${prod.name}</span>
+                            </div>
+                            <span class="text-[#6C3CE1] font-bold text-sm">৳${prod.price}</span>
+                        </div>`;
+                });
+                grid.innerHTML = html;
+            });
+        }
+
+        function selectProduct(el, name, price, id) {
+            document.querySelectorAll('.product-card').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedProduct = { id, name, price: parseInt(price) };
+            document.getElementById('total-price').innerText = selectedProduct.price;
+        }
+
+        function selectPaymentOption(option) {
+            selectedPaymentMethod = option;
+            document.querySelectorAll('.pay-option-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById('opt-' + option).classList.add('selected');
+        }
+
+        function processOrder() {
+            if (!currentUser) return Swal.fire('Login Required', 'Please login first.', 'info').then(() => showSec(
+                'auth'));
+            const playerId = document.getElementById('game-player-id').value.trim();
+            if (!playerId && selectedGameType !== 'code') return Swal.fire('Missing ID', 'Please enter Player ID!',
+                'warning');
+            if (!selectedProduct) return Swal.fire('Select Package', 'Please select a recharge package!', 'warning');
+            if (selectedPaymentMethod === 'instant') {
+                isDirectBuy = true;
+                currentDepositAmount = selectedProduct.price;
+                pendingDirectOrder = { playerId, product: selectedProduct, gameId: selectedGameId,
+                    gameName: selectedGameName, gameType: selectedGameType };
+                document.getElementById('topup-sec').classList.add('hidden');
+                document.getElementById('addmoney-sec').classList.remove('hidden');
+                document.getElementById('am-step-1').classList.add('hidden');
+                document.getElementById('am-step-2').classList.remove('hidden');
+                document.getElementById('am-step-3').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                return;
+            }
+            if (userBalance < selectedProduct.price) return Swal.fire('Low Balance',
+                'Please Add Money first.', 'error');
+            Swal.fire({
+                title: 'Confirm Purchase?',
+                html: `<div class="text-left"><p><b>Item:</b> ${selectedProduct.name}</p><p><b>Price:</b> ৳${selectedProduct.price}</p><p><b>Player ID:</b> ${playerId}</p></div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#6C3CE1',
+                confirmButtonText: 'Yes, Buy Now',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    const newBalance = userBalance - selectedProduct.price;
+                    db.collection('users').doc(currentUser.uid).update({ balance: newBalance })
+                        .then(() => db.collection('orders').add({
+                            userId: currentUser.uid,
+                            userName: currentUser.email,
+                            gameName: selectedGameName,
+                            gameId: selectedGameId,
+                            playerId: playerId,
+                            productName: selectedProduct.name,
+                            price: selectedProduct.price,
+                            type: 'uid',
+                            status: 'pending',
+                            date: new Date()
+                        }))
+                        .then(() => {
+                            Swal.fire({ icon: 'success', title: 'Order Placed!',
+                                text: 'Your order has been placed successfully.',
+                                confirmButtonColor: '#6C3CE1' });
+                            showSec('home');
+                        })
+                        .catch(err => Swal.fire('Error', err.message, 'error'));
+                }
+            });
+        }
+
+        // ===== ADD MONEY =====
+        function goToMethodStep() {
+            const val = parseInt(document.getElementById('new-amount-input').value);
+            if (!val || val < 10) return Swal.fire('Error', 'Minimum amount is 10 Tk', 'error');
+            currentDepositAmount = val;
+            document.getElementById('am-step-1').classList.add('hidden');
+            document.getElementById('am-step-2').classList.remove('hidden');
+        }
+
+        function backToAmountStep() {
+            if (isDirectBuy) {
+                document.getElementById('am-step-2').classList.add('hidden');
+                document.getElementById('addmoney-sec').classList.add('hidden');
+                document.getElementById('topup-sec').classList.remove('hidden');
+                isDirectBuy = false;
+            } else {
+                document.getElementById('am-step-2').classList.add('hidden');
+                document.getElementById('am-step-1').classList.remove('hidden');
+            }
+        }
+
+        function goToPaymentPage(method, themeColor) {
+            currentPaymentMethod = method;
+            document.getElementById('pay-amount-display').innerText = currentDepositAmount;
+            document.getElementById('pay-amount-text').innerText = currentDepositAmount;
+            document.querySelectorAll('.method-name').forEach(el => el.innerText = method);
+            const card = document.getElementById('payment-theme-card');
+            card.style.background =
+                `linear-gradient(135deg, ${themeColor}, ${adjustColor(themeColor, -30)})`;
+            document.getElementById('pay-admin-number').innerText = 'Loading...';
+            db.collection("admin").doc("payment").get().then(doc => {
+                if (doc.exists) {
+                    const num = doc.data()[method.toLowerCase()] || 'Not Available';
+                    document.getElementById('pay-admin-number').innerText = num;
+                }
+            });
+            document.getElementById('am-step-2').classList.add('hidden');
+            document.getElementById('am-step-3').classList.remove('hidden');
+        }
+
+        function adjustColor(hex, amount) {
+            let r = parseInt(hex.slice(1, 3), 16),
+                g = parseInt(hex.slice(3, 5), 16),
+                b = parseInt(hex.slice(5, 7), 16);
+            r = Math.max(0, Math.min(255, r + amount));
+            g = Math.max(0, Math.min(255, g + amount));
+            b = Math.max(0, Math.min(255, b + amount));
+            return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+        }
+
+        function backToMethodStep() {
+            document.getElementById('am-step-3').classList.add('hidden');
+            document.getElementById('am-step-2').classList.remove('hidden');
+        }
+
+        function handleNewVerify() {
+            const trxId = document.getElementById('pay-trx-input').value.trim();
+            if (!trxId) return Swal.fire('Required', 'Please enter Transaction ID.', 'warning');
+            if (isAutoPayEnabled) {
+                verifyAutoPayment(trxId, currentDepositAmount);
+            } else {
+                if (isDirectBuy) {
+                    Swal.fire('Notice', 'Manual verification not supported for Instant Buy. Contact support.',
+                        'warning');
+                } else {
+                    Swal.showLoading();
+                    db.collection('deposits').add({
+                        userId: currentUser.uid,
+                        amount: currentDepositAmount,
+                        trxId: trxId.toUpperCase(),
+                        status: 'pending',
+                        date: new Date(),
+                        userEmail: currentUser.email,
+                        method: currentPaymentMethod
+                    }).then(() => {
+                        Swal.fire({ title: 'Request Submitted', text: 'Waiting for admin approval.',
+                            icon: 'success', confirmButtonColor: '#6C3CE1' }).then(() => showSec(
+                            'home'));
+                    }).catch(err => Swal.fire('Error', err.message, 'error'));
+                }
+            }
+        }
+
+        async function verifyAutoPayment(trxId, amount) {
+            trxId = trxId.toUpperCase();
+            Swal.fire({ title: 'Verifying...', didOpen: () => Swal.showLoading() });
+            try {
+                const check = await db.collection('deposits').where('trxId', '==', trxId).limit(1).get();
+                if (!check.empty) return Swal.fire('Used', 'This Transaction ID has already been used.', 'error');
+            } catch (e) { return Swal.fire('Error', 'Could not verify. Please try again.', 'error'); }
+
+            rtdb.ref('XNXANIKPAY').orderByChild('txid').equalTo(trxId).once('value', async (snap) => {
+                if (!snap.exists()) return Swal.fire('Not Found',
+                    'Transaction ID not found. Please try again or contact support.', 'error');
+                let paymentData = null;
+                snap.forEach(child => paymentData = child.val());
+                if (parseInt(paymentData.amount) !== parseInt(amount)) {
+                    return Swal.fire('Mismatch',
+                        `Amount mismatch! You entered ${amount} but system found ${paymentData.amount}.`,
+                        'error');
+                }
+                const amountToAdd = parseInt(paymentData.amount);
+                const userRef = db.collection('users').doc(currentUser.uid);
+                try {
+                    await db.runTransaction(async (t) => {
+                        const uDoc = await t.get(userRef);
+                        t.update(userRef, { balance: (uDoc.data().balance || 0) + amountToAdd });
+                    });
+                    await db.collection('deposits').add({
+                        userId: currentUser.uid,
+                        userEmail: currentUser.email,
+                        amount: amountToAdd,
+                        trxId: trxId,
+                        status: 'approved',
+                        method: currentPaymentMethod + ' (Auto)',
+                        date: new Date()
+                    });
+                    if (isDirectBuy && pendingDirectOrder) {
+                        userBalance += amountToAdd;
+                        Swal.fire({ title: 'Payment Verified!', text: 'Processing your order...', icon: 'success',
+                            timer: 2000, showConfirmButton: false });
+                        const order = pendingDirectOrder;
+                        const newBalance = userBalance - order.product.price;
+                        await db.collection('users').doc(currentUser.uid).update({ balance: newBalance });
+                        await db.collection('orders').add({
+                            userId: currentUser.uid,
+                            userName: currentUser.email,
+                            gameName: order.gameName,
+                            gameId: order.gameId,
+                            playerId: order.playerId,
+                            productName: order.product.name,
+                            price: order.product.price,
+                            type: 'uid',
+                            status: 'pending',
+                            date: new Date()
+                        });
+                        isDirectBuy = false;
+                        pendingDirectOrder = null;
+                        Swal.fire({ icon: 'success', title: 'Order Placed!', text: 'Order submitted successfully.',
+                            confirmButtonColor: '#6C3CE1' });
+                        showSec('home');
+                    } else {
+                        Swal.fire({ icon: 'success', title: 'Deposit Successful!',
+                            text: `Added ৳${amountToAdd} to wallet.`, confirmButtonColor: '#6C3CE1' }).then(
+                            () => showSec('home'));
+                    }
+                } catch (error) {
+                    Swal.fire('Failed', 'System error. Contact support.', 'error');
+                }
+            }, () => Swal.fire('Error', 'Could not reach payment server. Try again.', 'error'));
+        }
+
+        // ===== BANNERS =====
+        function loadBanners() {
+            db.collection("banners").onSnapshot((snap) => {
+                const wrapper = document.getElementById('slider-wrapper');
+                let html = '';
+                snap.forEach(doc => {
+                    if (doc.data().image) html +=
+                        `<img src="${doc.data().image}" class="w-full h-full object-cover flex-shrink-0" />`;
+                });
+                if (html) {
+                    wrapper.innerHTML = html;
+                    startSlider();
+                } else {
+                    wrapper.innerHTML =
+                        `<div class="w-full h-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-[#6C3CE1] to-[#8B5CF6] text-white"><div class="text-center"><i class="fas fa-rocket text-3xl block mb-2"></i><span class="font-bold text-lg">AURA TOPUP</span><p class="text-sm opacity-80">Premium Gaming Store</p></div></div>`;
+                }
+            });
+        }
+
+        let sliderInterval;
+
+        function startSlider() {
+            clearInterval(sliderInterval);
+            const wrapper = document.getElementById('slider-wrapper');
+            const count = wrapper.children.length;
+            if (count <= 1) return;
+            let idx = 0;
+            sliderInterval = setInterval(() => {
+                idx = (idx + 1) % count;
+                wrapper.style.transform = `translateX(-${idx * 100}%)`;
+            }, 4000);
+        }
+
+        // ===== INIT =====
+        loadGlobalSettings();
+        loadAppContent();
+        loadBanners();
+        selectPaymentOption('wallet');
+        updateFabVisibility('home');
+    </script>
+</body>
+</html>
